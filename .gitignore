@@ -16,6 +16,9 @@ models/
 datasets/
 raw_data/
 *.parquet
+data/raw/
+data/processed/
+data/splits/
 
 # DVC Cache & Artifacts
 .dvc/config.local
