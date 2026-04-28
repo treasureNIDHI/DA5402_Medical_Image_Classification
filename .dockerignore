@@ -1,0 +1,12 @@
+# Ignore large/unnecessary files
+models/
+data/
+reports/
+__pycache__/
+*.pyc
+.env
+.git
+.github
+dags/
+frontend/
+grafana/
