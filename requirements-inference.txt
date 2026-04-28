@@ -1,0 +1,9 @@
+# Inference-only requirements — minimal footprint for production containers
+# PyTorch CPU installed separately via --index-url (see dockerfile)
+fastapi==0.135.3
+uvicorn==0.44.0
+python-multipart==0.0.24
+pillow==12.2.0
+numpy>=1.24.0
+psutil>=5.9.0
+prometheus-client>=0.17.0

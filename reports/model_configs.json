@@ -1,0 +1,92 @@
+{
+  "available_configs": {
+    "resnet50_baseline": {
+      "name": "ResNet-50 Baseline",
+      "architecture": "resnet50",
+      "pretrained": true,
+      "num_classes": 2,
+      "learning_rate": 0.0001,
+      "optimizer": "adam",
+      "batch_size": 32,
+      "epochs": 5,
+      "weight_decay": 0.0,
+      "dropout": 0.0,
+      "augmentation": false,
+      "scheduler": "none"
+    },
+    "resnet50_aggressive": {
+      "name": "ResNet-50 Aggressive",
+      "architecture": "resnet50",
+      "pretrained": true,
+      "num_classes": 2,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "batch_size": 16,
+      "epochs": 10,
+      "weight_decay": 0.0001,
+      "dropout": 0.0,
+      "augmentation": false,
+      "scheduler": "none"
+    },
+    "resnet34_lightweight": {
+      "name": "ResNet-34 Lightweight",
+      "architecture": "resnet34",
+      "pretrained": true,
+      "num_classes": 2,
+      "learning_rate": 0.0001,
+      "optimizer": "sgd",
+      "batch_size": 32,
+      "epochs": 5,
+      "weight_decay": 0.0001,
+      "dropout": 0.0,
+      "augmentation": false,
+      "scheduler": "none"
+    },
+    "mobilenet_edge": {
+      "name": "MobileNet Edge",
+      "architecture": "mobilenet_v2",
+      "pretrained": true,
+      "num_classes": 2,
+      "learning_rate": 0.0001,
+      "optimizer": "adam",
+      "batch_size": 64,
+      "epochs": 5,
+      "weight_decay": 0.0,
+      "dropout": 0.0,
+      "augmentation": false,
+      "scheduler": "none"
+    },
+    "efficientnet_balanced": {
+      "name": "EfficientNet B0 Balanced",
+      "architecture": "efficientnet_b0",
+      "pretrained": true,
+      "num_classes": 2,
+      "learning_rate": 5e-05,
+      "optimizer": "adam",
+      "batch_size": 32,
+      "epochs": 10,
+      "weight_decay": 0.0001,
+      "dropout": 0.0,
+      "augmentation": false,
+      "scheduler": "none"
+    }
+  },
+  "recommendations": {
+    "for_accuracy": {
+      "config": "resnet50_aggressive",
+      "reason": "Higher learning rate and more epochs for convergence",
+      "expected_accuracy": "0.95+"
+    },
+    "for_speed": {
+      "config": "mobilenet_edge",
+      "reason": "Lightweight architecture optimized for inference",
+      "expected_latency": "<50ms"
+    },
+    "for_production": {
+      "config": "resnet50_baseline",
+      "reason": "Good balance of accuracy, speed, and model size",
+      "expected_accuracy": "0.92+",
+      "expected_latency": "<100ms"
+    }
+  }
+}

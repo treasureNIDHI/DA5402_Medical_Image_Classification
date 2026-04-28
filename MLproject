@@ -1,0 +1,33 @@
+name: medical-image-classification
+
+python_env: python_env.yaml
+
+entry_points:
+  train_pneumonia:
+    parameters:
+      data_dir: {type: str, default: "data/processed/chest_xray"}
+      epochs:   {type: int, default: 5}
+      lr:       {type: float, default: 0.0001}
+    command: "python -m src.training.train"
+
+  train_brain:
+    parameters:
+      data_dir: {type: str, default: "data/splits/brain_tumor"}
+      epochs:   {type: int, default: 5}
+      lr:       {type: float, default: 0.0001}
+    command: "python -m src.training.train_brain"
+
+  evaluate:
+    parameters:
+      pneumonia_model: {type: str, default: "models/pneumonia/pneumonia_resnet50.pt"}
+      brain_model:     {type: str, default: "models/brain_tumor/brain_resnet50.pt"}
+    command: "python -m src.evaluation.evaluate"
+
+  full_pipeline:
+    command: "dvc repro"
+
+  monitor:
+    command: "python -m src.monitoring.monitor"
+
+  health_check:
+    command: "python -m src.monitoring.health_check"

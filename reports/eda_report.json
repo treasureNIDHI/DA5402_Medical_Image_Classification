@@ -1,0 +1,82 @@
+{
+  "processed_dir": "data/processed",
+  "datasets": {
+    "brain_tumor": {
+      "test": {
+        "total_images": 1600,
+        "class_counts": {
+          "glioma": 400,
+          "meningioma": 400,
+          "notumor": 400,
+          "pituitary": 400
+        },
+        "class_balance": {
+          "glioma": 0.25,
+          "meningioma": 0.25,
+          "notumor": 0.25,
+          "pituitary": 0.25
+        },
+        "avg_width": 224.0,
+        "avg_height": 224.0
+      },
+      "train": {
+        "total_images": 5600,
+        "class_counts": {
+          "glioma": 1400,
+          "meningioma": 1400,
+          "notumor": 1400,
+          "pituitary": 1400
+        },
+        "class_balance": {
+          "glioma": 0.25,
+          "meningioma": 0.25,
+          "notumor": 0.25,
+          "pituitary": 0.25
+        },
+        "avg_width": 224.0,
+        "avg_height": 224.0
+      }
+    },
+    "chest_xray": {
+      "test": {
+        "total_images": 624,
+        "class_counts": {
+          "NORMAL": 234,
+          "PNEUMONIA": 390
+        },
+        "class_balance": {
+          "NORMAL": 0.375,
+          "PNEUMONIA": 0.625
+        },
+        "avg_width": 224.0,
+        "avg_height": 224.0
+      },
+      "train": {
+        "total_images": 5216,
+        "class_counts": {
+          "NORMAL": 1341,
+          "PNEUMONIA": 3875
+        },
+        "class_balance": {
+          "NORMAL": 0.2571,
+          "PNEUMONIA": 0.7429
+        },
+        "avg_width": 224.0,
+        "avg_height": 224.0
+      },
+      "val": {
+        "total_images": 16,
+        "class_counts": {
+          "NORMAL": 8,
+          "PNEUMONIA": 8
+        },
+        "class_balance": {
+          "NORMAL": 0.5,
+          "PNEUMONIA": 0.5
+        },
+        "avg_width": 224.0,
+        "avg_height": 224.0
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "raw_dir": "data/raw",
+  "processed_dir": "data/processed",
+  "image_size": [
+    224,
+    224
+  ],
+  "processed_count": 13056,
+  "skipped_count": 0,
+  "corrupt_count": 0,
+  "outlier_count": 27,
+  "class_counts": {
+    "pituitary": 1800,
+    "notumor": 1800,
+    "glioma": 1800,
+    "meningioma": 1800,
+    "PNEUMONIA": 4273,
+    "NORMAL": 1583
+  },
+  "skipped_files": [],
+  "outlier_files": [
+    "data/raw/chest_xray/train/PNEUMONIA/person407_virus_811.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1684_bacteria_4461.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person325_virus_661.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person325_virus_660.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1728_bacteria_4556.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1706_bacteria_4516.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1732_bacteria_4564.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1642_bacteria_4352.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person325_virus_665.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1719_bacteria_4541.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1669_bacteria_4422.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person407_virus_814.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1728_bacteria_4555.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person354_bacteria_1632.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1311_bacteria_3312.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1679_bacteria_4448.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person325_virus_659.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1763_bacteria_4606.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person355_virus_731.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person309_virus_631.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1716_bacteria_4533.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1677_bacteria_4444.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1679_bacteria_4449.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1684_bacteria_4462.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person1689_bacteria_4474.jpeg",
+    "data/raw/chest_xray/train/PNEUMONIA/person421_virus_866.jpeg",
+    "data/raw/chest_xray/test/PNEUMONIA/person81_bacteria_397.jpeg"
+  ],
+  "standardized_brain_tumor_dirs": [
+    {
+      "source": "Training",
+      "target": "train"
+    },
+    {
+      "source": "Testing",
+      "target": "test"
+    }
+  ]
+}
