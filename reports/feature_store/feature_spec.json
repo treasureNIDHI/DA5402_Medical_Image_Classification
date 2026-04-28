@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "inputs": [
+    "processed image files under data/processed"
+  ],
+  "features": {
+    "width": "Pixel width after preprocessing",
+    "height": "Pixel height after preprocessing",
+    "aspect_ratio": "Width divided by height",
+    "file_size_kb": "File size in kilobytes",
+    "mean_intensity": "Mean grayscale intensity",
+    "std_intensity": "Standard deviation of grayscale intensity",
+    "contrast": "Alias for grayscale intensity spread",
+    "edge_energy": "Average absolute grayscale gradient",
+    "red_mean": "Mean red channel value",
+    "green_mean": "Mean green channel value",
+    "blue_mean": "Mean blue channel value"
+  }
+}

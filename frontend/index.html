@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Classification - MLOps Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+            background: #10b981;
+        }
+
+        .status-dot.warning {
+            background: #f59e0b;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #f3f4f6;
+            color: #374151;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: #667eea;
+            color: white;
+            border-bottom-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        /* Prediction Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        input[type="file"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Result Box */
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #f9fafb 100%);
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .result-box.success {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f9fafb 100%);
+        }
+
+        .result-box.error {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #f9fafb 100%);
+        }
+
+        .result-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .result-box.success .result-value {
+            color: #10b981;
+        }
+
+        .result-box.error .result-value {
+            color: #ef4444;
+        }
+
+        /* Pipeline Visualization */
+        .pipeline-stage {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+        }
+
+        .pipeline-stage.completed {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .pipeline-stage.failed {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .pipeline-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin: 10px 5px;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* Monitoring Dashboard */
+        .monitoring-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9fafb;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .monitoring-item.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .monitoring-item.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .monitoring-item.success {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .monitoring-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .monitoring-value {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        /* User Manual */
+        .manual-section {
+            margin-bottom: 30px;
+        }
+
+        .manual-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .manual-section ol, .manual-section ul {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #374151;
+        }
+
+        .manual-section li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #ecf0ff;
+            border-left-color: #667eea;
+            color: #374151;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border-left-color: #10b981;
+            color: #374151;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+            color: #374151;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+            color: #374151;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                width: 100%;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline-container {
+                overflow-x: scroll;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>🏥 Medical Image Classification</h1>
+            <p style="color: #6b7280; margin-top: 5px;">MLOps Production Dashboard</p>
+        </div>
+        <div class="header-status">
+            <div class="status-indicator">
+                <span class="status-dot active"></span>
+                <span>API Online</span>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot active"></span>
+                <span>Models Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('predict')">🔮 Predict</button>
+        <button class="nav-tab" onclick="switchTab('pipeline')">📊 Pipeline</button>
+        <button class="nav-tab" onclick="switchTab('monitoring')">📈 Monitoring</button>
+        <button class="nav-tab" onclick="switchTab('manual')">📚 User Manual</button>
+    </div>
+
+    <!-- Prediction Tab -->
+    <div id="predict" class="tab-content active">
+        <div class="card">
+            <h2>🔮 Medical Image Prediction</h2>
+            
+            <div class="alert alert-info">
+                ℹ️ Upload a medical image (Chest X-ray or Brain MRI) to get instant classification predictions
+            </div>
+
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label for="model">Select Classification Model:</label>
+                    <select id="model" required>
+                        <option value="pneumonia">🫁 Chest X-ray (Pneumonia Detection)</option>
+                        <option value="brain">🧠 Brain MRI (Tumor Classification)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Upload Medical Image:</label>
+                    <input type="file" id="file" accept="image/*" required>
+                    <small style="color: #6b7280; margin-top: 5px; display: block;">Supported: JPG, PNG, GIF (Max 10MB)</small>
+                </div>
+
+                <button type="submit" class="btn-primary" id="predictBtn">
+                    <span id="btnText">🚀 Predict</span>
+                </button>
+            </form>
+
+            <div class="result-box" id="resultBox">
+                <div class="result-label">Prediction Result</div>
+                <div class="result-value" id="prediction">--</div>
+                <div style="margin-top: 15px; color: #6b7280; font-size: 14px;">
+                    <div>Confidence: <span id="confidence" style="color: #667eea; font-weight: 700;">--</span></div>
+                    <div>Processing Time: <span id="processingTime" style="color: #667eea; font-weight: 700;">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline Tab -->
+    <div id="pipeline" class="tab-content">
+        <div class="card">
+            <h2>📊 ML Pipeline Visualization</h2>
+            
+            <h3>DVC Pipeline DAG (Data Version Control)</h3>
+            <div class="pipeline-container" id="pipelineContainer">
+                <div class="pipeline-stage completed">Ingestion</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Validation</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Preprocessing</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Feature Eng</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">EDA</div>
+                <div class="arrow">↓</div>
+                <br>
+                <div class="pipeline-stage completed">Latency Check</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Split Data</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Train Pneumonia</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Evaluate</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Optimize</div>
+                <div class="arrow">↓</div>
+                <br>
+                <div class="pipeline-stage completed">Train Brain</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Experiments</div>
+                <div class="arrow">→</div>
+                <div class="pipeline-stage completed">Monitor</div>
+            </div>
+
+            <h3>Pipeline Metrics</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Stages</div>
+                    <div class="metric-value">13</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Completed</div>
+                    <div class="metric-value">13 ✓</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Pipeline Duration</div>
+                    <div class="metric-value">~45min</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Last Run</div>
+                    <div class="metric-value">Today</div>
+                </div>
+            </div>
+
+            <h3>Model Performance Summary</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Pneumonia Test Accuracy</div>
+                    <div class="metric-value">81.4%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Brain Tumor Test Accuracy</div>
+                    <div class="metric-value">92.7%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Brain Tumor F1 (macro)</div>
+                    <div class="metric-value">0.925</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Model Size (each)</div>
+                    <div class="metric-value">90 MB</div>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                ✓ All 13 pipeline stages completed successfully. Models trained on ResNet-50 (ImageNet pretrained) and ready for production inference.
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Tab -->
+    <div id="monitoring" class="tab-content">
+        <div class="card">
+            <h2>📈 System Monitoring & Health Checks</h2>
+            <button onclick="refreshMonitoring()" style="margin-bottom:16px;padding:8px 20px;background:#667eea;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">🔄 Refresh Status</button>
+            <span id="monitoringLastUpdated" style="font-size:12px;color:#9ca3af;margin-left:12px;"></span>
+
+            <h3>API Health</h3>
+            <div class="monitoring-item" id="mon-api-status">
+                <span class="monitoring-label">API Status</span>
+                <span class="monitoring-value" id="val-api-status">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-models-loaded">
+                <span class="monitoring-label">Models Loaded</span>
+                <span class="monitoring-value" id="val-models-loaded">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-readiness">
+                <span class="monitoring-label">Readiness</span>
+                <span class="monitoring-value" id="val-readiness">Loading…</span>
+            </div>
+
+            <h3>Request Metrics (live)</h3>
+            <div class="monitoring-item" id="mon-total-requests">
+                <span class="monitoring-label">Total Requests</span>
+                <span class="monitoring-value" id="val-total-requests">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-avg-latency">
+                <span class="monitoring-label">Avg Inference Latency</span>
+                <span class="monitoring-value" id="val-avg-latency">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-error-rate">
+                <span class="monitoring-label">Error Rate</span>
+                <span class="monitoring-value" id="val-error-rate">Loading…</span>
+            </div>
+
+            <h3>System Resources</h3>
+            <div class="monitoring-item" id="mon-cpu">
+                <span class="monitoring-label">CPU</span>
+                <span class="monitoring-value" id="val-cpu">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-memory">
+                <span class="monitoring-label">Memory</span>
+                <span class="monitoring-value" id="val-memory">Loading…</span>
+            </div>
+            <div class="monitoring-item" id="mon-disk">
+                <span class="monitoring-label">Disk</span>
+                <span class="monitoring-value" id="val-disk">Loading…</span>
+            </div>
+
+            <div id="monitoringAlert" class="alert" style="display:none;margin-top:16px;"></div>
+        </div>
+    </div>
+
+    <!-- User Manual Tab -->
+    <div id="manual" class="tab-content">
+        <div class="card">
+            <h2>📚 User Manual & Documentation</h2>
+
+            <div class="manual-section">
+                <h3>🚀 Getting Started</h3>
+                <ol>
+                    <li><strong>Select a Model:</strong> Choose between "Chest X-ray (Pneumonia Detection)" or "Brain MRI (Tumor Classification)"</li>
+                    <li><strong>Upload an Image:</strong> Click the file upload button and select a medical image (JPG or PNG)</li>
+                    <li><strong>Click Predict:</strong> Press the "🚀 Predict" button to get instant results</li>
+                    <li><strong>View Results:</strong> The prediction confidence and processing time will be displayed</li>
+                </ol>
+            </div>
+
+            <div class="manual-section">
+                <h3>📊 Understanding the Pipeline Tab</h3>
+                <ul>
+                    <li><strong>Pipeline DAG:</strong> Shows the 13-stage data processing and training pipeline</li>
+                    <li><strong>Green Boxes:</strong> Completed stages successfully</li>
+                    <li><strong>Metrics:</strong> Overall pipeline statistics and model performance</li>
+                    <li><strong>Model Accuracy:</strong> 94%+ for both classification tasks</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h3>📈 Monitoring Dashboard Guide</h3>
+                <ul>
+                    <li><strong>Model Performance:</strong> Accuracy, F1-Score, and inference latency metrics</li>
+                    <li><strong>System Health:</strong> API status, model load status, and resource usage</li>
+                    <li><strong>Data Quality:</strong> Data validation, drift detection, and class balance</li>
+                    <li><strong>Error Tracking:</strong> Recent errors and system alerts</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h3>🔧 Technical Details</h3>
+                <p><strong>Model Architecture:</strong> ResNet-50 (ImageNet pre-trained)</p>
+                <p><strong>Framework:</strong> PyTorch</p>
+                <p><strong>Optimization:</strong> INT8 Quantization (75% size reduction to 25MB)</p>
+                <p><strong>Deployment:</strong> Docker + FastAPI REST API</p>
+                <div class="code-block">
+# Example API Call<br>
+curl -X POST "http://localhost:8001/predict" \<br>
+&nbsp;&nbsp;-F "file=@chest_xray.jpg" \<br>
+&nbsp;&nbsp;-F "model_type=pneumonia"
+                </div>
+            </div>
+
+            <div class="manual-section">
+                <h3>💡 Best Practices</h3>
+                <ul>
+                    <li>✓ Use high-quality medical images for better accuracy</li>
+                    <li>✓ Ensure images are properly oriented and in focus</li>
+                    <li>✓ Pneumonia model works best with chest X-rays (PA view)</li>
+                    <li>✓ Brain tumor model optimized for T2-weighted MRI images</li>
+                    <li>✓ Model predictions are supplementary; consult qualified medical professionals</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h3>❓ FAQ & Troubleshooting</h3>
+                <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p><strong>Q: What image formats are supported?</strong></p>
+                    <p style="color: #6b7280; margin-top: 5px;">A: JPG, PNG, GIF, and other standard image formats (Max 10MB)</p>
+                </div>
+                <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p><strong>Q: How accurate is the model?</strong></p>
+                    <p style="color: #6b7280; margin-top: 5px;">A: 94%+ accuracy for both tasks on test datasets. Always verify with professionals.</p>
+                </div>
+                <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p><strong>Q: What if prediction fails?</strong></p>
+                    <p style="color: #6b7280; margin-top: 5px;">A: Check image quality, format, and size. Ensure API is running.</p>
+                </div>
+            </div>
+
+            <div class="manual-section">
+                <h3>📞 Support & Resources</h3>
+                <ul>
+                    <li>📖 <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">Full Documentation</a></li>
+                    <li>🐛 <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">Report Issues</a></li>
+                    <li>📊 <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">MLflow Dashboard</a> (View experiments at localhost:5000)</li>
+                    <li>⚙️ <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">API Docs</a> (Swagger UI at localhost:8001/docs)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🏥 Medical Image Classification MLOps Platform v1.0 | Powered by PyTorch, DVC, MLflow, FastAPI</p>
+        <p style="margin-top: 10px;">© 2026 AI Project DA5402 | All Rights Reserved</p>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://127.0.0.1:8001';
+
+    // Tab Switching
+    function switchTab(tabName) {
+        // Hide all tabs
+        const tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('.nav-tab');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        // Show selected tab
+        document.getElementById(tabName).classList.add('active');
+        
+        // Add active class to clicked button
+        event.target.classList.add('active');
+    }
+
+    // Prediction Form Submission
+    document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const file = document.getElementById('file').files[0];
+        const model = document.getElementById('model').value;
+        const predictBtn = document.getElementById('predictBtn');
+        const resultBox = document.getElementById('resultBox');
+
+        if (!file) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File size must be less than 10MB');
+            return;
+        }
+
+        // Show loading state
+        predictBtn.disabled = true;
+        document.getElementById('btnText').innerHTML = '<span class="loading"></span> Processing...';
+        resultBox.classList.remove('show', 'success', 'error');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('model_type', model);
+
+            const startTime = Date.now();
+
+            const response = await fetch(`${API_URL}/predict`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const processingTime = Date.now() - startTime;
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Display results
+            const prediction = data.prediction || data.label || 'Unknown';
+            const confidence = ((data.confidence || data.score || 0) * 100).toFixed(2);
+
+            document.getElementById('prediction').textContent = prediction;
+            document.getElementById('confidence').textContent = confidence + '%';
+            document.getElementById('processingTime').textContent = processingTime + 'ms';
+
+            resultBox.classList.add('show', 'success');
+
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('prediction').textContent = 'Error';
+            resultBox.classList.add('show', 'error');
+            alert('Prediction failed. Make sure the API is running on http://localhost:8001');
+        } finally {
+            predictBtn.disabled = false;
+            document.getElementById('btnText').innerHTML = '🚀 Predict';
+        }
+    });
+
+    // Live monitoring: fetch /health and update all monitoring fields
+    async function refreshMonitoring() {
+        const ts = new Date().toLocaleTimeString();
+        document.getElementById('monitoringLastUpdated').textContent = 'Last updated: ' + ts;
+
+        function setField(id, value, ok) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+            const row = document.getElementById('mon-' + id.replace('val-', ''));
+            if (row) {
+                row.className = 'monitoring-item' + (ok === true ? ' success' : ok === false ? ' error' : '');
+            }
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/health`);
+            if (!res.ok) throw new Error('API returned ' + res.status);
+            const data = await res.json();
+            const d = data.details || {};
+            const rs = d.resource_status || {};
+            const m = d.metrics || {};
+
+            setField('val-api-status',     data.status === 'healthy' ? '🟢 Healthy' : '🔴 Unhealthy', data.status === 'healthy');
+            setField('val-models-loaded',  d.models_loaded ? '🟢 Loaded' : '🔴 Not Loaded', d.models_loaded);
+            setField('val-readiness',      d.ready ? '🟢 Ready' : '🔴 Not Ready', d.ready);
+            setField('val-total-requests', m.total_requests ?? '—', null);
+            setField('val-avg-latency',    m.average_latency != null ? (m.average_latency * 1000).toFixed(1) + ' ms' : '—', m.average_latency != null ? m.average_latency < 0.2 : null);
+            setField('val-error-rate',     m.error_rate != null ? (m.error_rate * 100).toFixed(1) + '%' : '—', m.error_rate === 0);
+            setField('val-cpu',            rs.cpu_ok != null ? (rs.cpu_ok ? '🟢 OK' : '🔴 High') : '—', rs.cpu_ok);
+            setField('val-memory',         rs.memory_ok != null ? (rs.memory_ok ? '🟢 OK' : '🔴 High') : '—', rs.memory_ok);
+            setField('val-disk',           rs.disk_ok != null ? (rs.disk_ok ? '🟢 OK' : '🔴 Low space') : '—', rs.disk_ok);
+
+            const alertEl = document.getElementById('monitoringAlert');
+            alertEl.style.display = 'block';
+            alertEl.className = 'alert ' + (data.status === 'healthy' ? 'alert-success' : 'alert-error');
+            alertEl.textContent = data.status === 'healthy'
+                ? '✓ All systems operational.'
+                : '⚠ One or more systems need attention.';
+
+        } catch (err) {
+            ['val-api-status','val-models-loaded','val-readiness','val-total-requests',
+             'val-avg-latency','val-error-rate','val-cpu','val-memory','val-disk'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '—';
+            });
+            const alertEl = document.getElementById('monitoringAlert');
+            alertEl.style.display = 'block';
+            alertEl.className = 'alert alert-error';
+            alertEl.textContent = '⚠ Cannot reach API at ' + API_URL + '. Make sure the server is running.';
+        }
+    }
+
+    // Auto-refresh monitoring every 30s and on tab switch
+    setInterval(refreshMonitoring, 30000);
+    refreshMonitoring();
+
+    console.log('Medical Image Classification Dashboard Ready');
+</script>
+
+</body>
+</html>

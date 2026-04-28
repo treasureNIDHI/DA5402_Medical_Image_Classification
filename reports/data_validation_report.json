@@ -1,0 +1,74 @@
+{
+  "raw_dir": "data/raw",
+  "datasets": {
+    "chest_xray": {
+      "path": "data/raw/chest_xray",
+      "exists": true,
+      "splits": {
+        "train": {
+          "valid_images": 5216,
+          "corrupt_images": 0,
+          "class_distribution": {
+            "NORMAL": 1341,
+            "PNEUMONIA": 3875
+          }
+        },
+        "val": {
+          "valid_images": 16,
+          "corrupt_images": 0,
+          "class_distribution": {
+            "NORMAL": 8,
+            "PNEUMONIA": 8
+          }
+        },
+        "test": {
+          "valid_images": 624,
+          "corrupt_images": 0,
+          "class_distribution": {
+            "NORMAL": 234,
+            "PNEUMONIA": 390
+          }
+        }
+      },
+      "total_valid": 5856,
+      "total_corrupt": 0,
+      "issues": []
+    },
+    "brain_tumor": {
+      "path": "data/raw/brain_tumor",
+      "exists": true,
+      "splits": {
+        "Training": {
+          "valid_images": 5600,
+          "corrupt_images": 0,
+          "class_distribution": {
+            "glioma": 1400,
+            "meningioma": 1400,
+            "notumor": 1400,
+            "pituitary": 1400
+          }
+        },
+        "Testing": {
+          "valid_images": 1600,
+          "corrupt_images": 0,
+          "class_distribution": {
+            "glioma": 400,
+            "meningioma": 400,
+            "notumor": 400,
+            "pituitary": 400
+          }
+        }
+      },
+      "total_valid": 7200,
+      "total_corrupt": 0,
+      "issues": []
+    }
+  },
+  "overall_valid": true,
+  "summary": {
+    "total_valid_images": 13056,
+    "total_corrupt_images": 0,
+    "total_issues": 0,
+    "issues": []
+  }
+}

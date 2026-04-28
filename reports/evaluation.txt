@@ -1,0 +1,4 @@
+pneumonia_test_accuracy: 0.8141025641025641
+pneumonia_test_f1: 0.7712812345959883
+brain_test_accuracy: 0.926875
+brain_test_f1: 0.9253021534780443

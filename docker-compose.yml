@@ -1,0 +1,229 @@
+version: '3.8'
+
+# ============================================================
+# PROFILES
+#   inference  — API + Frontend + Prometheus + Grafana
+#   training   — MLflow + PostgreSQL + Airflow
+#   full       — everything (default when no --profile given)
+#
+# Usage:
+#   docker compose --profile inference up -d     # inference only
+#   docker compose --profile training  up -d     # training stack
+#   docker compose up -d                         # everything
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # INFERENCE STACK (profile: inference)
+  # Self-contained — models are baked into the image.
+  # No MLflow, no database required at runtime.
+  # ----------------------------------------------------------
+
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: medical-imaging:latest
+    container_name: medical-api
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1
+      # MLflow is optional for inference — set only if you want run logging
+      - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-}
+    volumes:
+      # Mount reports dir so health/monitoring outputs are persisted
+      - ./reports:/app/reports
+    networks:
+      - medical-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    profiles: ["inference", "full"]
+
+  frontend:
+    image: nginx:alpine
+    container_name: medical-frontend
+    ports:
+      - "80:80"
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - medical-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles: ["inference", "full"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: medical-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - medical-network
+    restart: unless-stopped
+    profiles: ["inference", "full"]
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: medical-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - medical-network
+    restart: unless-stopped
+    profiles: ["inference", "full"]
+
+  grafana-setup:
+    image: python:3.11-alpine
+    container_name: medical-grafana-setup
+    volumes:
+      - ./grafana/setup.sh:/setup.sh:ro
+    entrypoint: ["sh", "/setup.sh"]
+    depends_on:
+      - grafana
+    networks:
+      - medical-network
+    restart: "no"
+    profiles: ["inference", "full"]
+
+  # ----------------------------------------------------------
+  # TRAINING STACK (profile: training)
+  # MLflow + PostgreSQL backend + Airflow orchestration
+  # Not required for inference.
+  # ----------------------------------------------------------
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: medical-postgres
+    environment:
+      - POSTGRES_USER=mlflow_user
+      - POSTGRES_PASSWORD=mlflow_password
+      - POSTGRES_DB=mlflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medical-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlflow_user -d mlflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+    profiles: ["training", "full"]
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: mlflow.dockerfile
+    container_name: medical-mlflow
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////opt/mlflow/mlflow.db
+      --default-artifact-root /mlartifacts
+      --allowed-hosts *
+    ports:
+      - "5000:5000"
+    volumes:
+      # Use named volume so MLflow DB is created fresh on first run
+      # and persists across restarts without needing a local file
+      - mlflow_db:/opt/mlflow
+      - mlflow_artifacts:/mlartifacts
+    networks:
+      - medical-network
+    environment:
+      - MLFLOW_ALLOWED_HOSTS=*
+    restart: unless-stopped
+    profiles: ["training", "full"]
+
+  airflow:
+    build:
+      context: .
+      dockerfile: airflow.dockerfile
+    container_name: medical-airflow
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      # Stable secret key — prevents CSRF token errors on browser reload/restart
+      - AIRFLOW__WEBSERVER__SECRET_KEY=da5402-medical-imaging-mlops-2026
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - .:/opt/airflow/project
+    command: >
+      bash -c "
+        airflow db init &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com 2>/dev/null || true &&
+        airflow webserver -p 8080 &
+        sleep 5 &&
+        airflow scheduler
+      "
+    depends_on:
+      - mlflow
+    networks:
+      - medical-network
+    restart: unless-stopped
+    profiles: ["training", "full"]
+
+  mlflow-init:
+    build:
+      context: .
+      dockerfile: mlflow.dockerfile
+    container_name: medical-mlflow-init
+    volumes:
+      - ./mlflow-init.sh:/mlflow-init.sh:ro
+    entrypoint: ["sh", "/mlflow-init.sh"]
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    networks:
+      - medical-network
+    restart: "no"
+    profiles: ["training", "full"]
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  postgres_data:
+  mlflow_db:
+  mlflow_artifacts:
+
+networks:
+  medical-network:
+    driver: bridge

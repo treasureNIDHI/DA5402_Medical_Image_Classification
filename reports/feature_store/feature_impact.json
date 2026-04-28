@@ -1,0 +1,143 @@
+{
+  "version": "1.0.0",
+  "overall_status": "healthy",
+  "feature_names": [
+    "width",
+    "height",
+    "aspect_ratio",
+    "file_size_kb",
+    "mean_intensity",
+    "std_intensity",
+    "contrast",
+    "edge_energy",
+    "red_mean",
+    "green_mean",
+    "blue_mean"
+  ],
+  "datasets": [
+    {
+      "dataset": "brain_tumor",
+      "status": "healthy",
+      "train_samples": 5600,
+      "test_samples": 1600,
+      "dummy_baseline": {
+        "accuracy": 0.25,
+        "f1": 0.1
+      },
+      "surrogate_model": {
+        "accuracy": 0.79,
+        "f1": 0.7827400463822096
+      },
+      "impact": {
+        "accuracy_gain": 0.54,
+        "f1_gain": 0.6827400463822096
+      },
+      "top_feature_importance": [
+        {
+          "feature": "edge_energy",
+          "importance": 0.18954355022290176
+        },
+        {
+          "feature": "std_intensity",
+          "importance": 0.16488824068289032
+        },
+        {
+          "feature": "file_size_kb",
+          "importance": 0.16185876262816548
+        },
+        {
+          "feature": "contrast",
+          "importance": 0.1530321526499022
+        },
+        {
+          "feature": "red_mean",
+          "importance": 0.08439331046897205
+        }
+      ],
+      "top_permutation_importance": [
+        {
+          "feature": "edge_energy",
+          "importance": 0.2293250067269657
+        },
+        {
+          "feature": "file_size_kb",
+          "importance": 0.19769174410828322
+        },
+        {
+          "feature": "std_intensity",
+          "importance": 0.11692812546974293
+        },
+        {
+          "feature": "contrast",
+          "importance": 0.0789753483266199
+        },
+        {
+          "feature": "red_mean",
+          "importance": 0.018668242171587003
+        }
+      ]
+    },
+    {
+      "dataset": "chest_xray",
+      "status": "healthy",
+      "train_samples": 5216,
+      "test_samples": 624,
+      "dummy_baseline": {
+        "accuracy": 0.625,
+        "f1": 0.38461538461538464
+      },
+      "surrogate_model": {
+        "accuracy": 0.7580128205128205,
+        "f1": 0.7188073545079338
+      },
+      "impact": {
+        "accuracy_gain": 0.13301282051282048,
+        "f1_gain": 0.3341919698925491
+      },
+      "top_feature_importance": [
+        {
+          "feature": "file_size_kb",
+          "importance": 0.307987583510341
+        },
+        {
+          "feature": "edge_energy",
+          "importance": 0.2856049623641644
+        },
+        {
+          "feature": "std_intensity",
+          "importance": 0.09659698819139946
+        },
+        {
+          "feature": "contrast",
+          "importance": 0.09288344613795034
+        },
+        {
+          "feature": "mean_intensity",
+          "importance": 0.05519161364093403
+        }
+      ],
+      "top_permutation_importance": [
+        {
+          "feature": "file_size_kb",
+          "importance": 0.19984140501758585
+        },
+        {
+          "feature": "edge_energy",
+          "importance": 0.18123424866079402
+        },
+        {
+          "feature": "std_intensity",
+          "importance": 0.07339065193690586
+        },
+        {
+          "feature": "contrast",
+          "importance": 0.07229735079503534
+        },
+        {
+          "feature": "blue_mean",
+          "importance": 0.06292576264960552
+        }
+      ]
+    }
+  ]
+}

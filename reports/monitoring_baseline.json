@@ -1,0 +1,45 @@
+{
+  "created_from_report_at": 1777101408226,
+  "models": [
+    {
+      "dataset": "pneumonia",
+      "model_path": "models/pneumonia/pneumonia_resnet50.pt",
+      "data_dir": "data/processed/chest_xray",
+      "accuracy": 0.8141025641025641,
+      "f1": 0.7712812345959883,
+      "drift_l1": 0.23581288343558282,
+      "train_distribution": {
+        "NORMAL": 0.2570935582822086,
+        "PNEUMONIA": 0.7429064417177914
+      },
+      "test_distribution": {
+        "NORMAL": 0.375,
+        "PNEUMONIA": 0.625
+      }
+    },
+    {
+      "dataset": "brain_tumor",
+      "model_path": "models/brain_tumor/brain_resnet50.pt",
+      "data_dir": "data/splits/brain_tumor",
+      "accuracy": 0.926875,
+      "f1": 0.9253021534780443,
+      "drift_l1": 0.0,
+      "train_distribution": {
+        "glioma": 0.25,
+        "meningioma": 0.25,
+        "notumor": 0.25,
+        "pituitary": 0.25
+      },
+      "test_distribution": {
+        "glioma": 0.25,
+        "meningioma": 0.25,
+        "notumor": 0.25,
+        "pituitary": 0.25
+      }
+    }
+  ],
+  "thresholds": {
+    "drift_l1": 0.15,
+    "accuracy_drop": 0.03
+  }
+}

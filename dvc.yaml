@@ -1,0 +1,123 @@
+stages:
+  ingestion:
+    cmd: python -m src.data.ingestion
+    deps:
+    - src/data/ingestion.py
+    outs:
+    - data/raw:
+        persist: true
+  validate:
+    cmd: python -m src.data.validation
+    deps:
+    - data/raw
+    - src/data/validation.py
+    outs:
+    - reports/data_validation_report.json
+  preprocess:
+    cmd: python -m src.data.preprocessing
+    deps:
+    - data/raw
+    - src/data/preprocessing.py
+    outs:
+    - data/processed
+    - reports/preprocessing_report.json
+  feature_engineering:
+    cmd: python -m src.features.engineering
+    deps:
+    - data/processed
+    - src/features/engineering.py
+    outs:
+    - reports/feature_store/feature_manifest.jsonl
+    - reports/feature_store/feature_spec.json
+    - reports/feature_store/feature_impact.json
+  eda:
+    cmd: python -m src.data.eda
+    deps:
+    - data/processed
+    - src/data/eda.py
+    - src/features/engineering.py
+    outs:
+    - reports/eda_report.json
+    - reports/eda_report.md
+    - reports/feature_store/feature_baseline.json
+  # latency_benchmark:
+  #   cmd: python -m src.monitoring.latency
+  #   deps:
+  #   - models
+  #   - src/inference/predict.py
+  #   - src/monitoring/latency.py
+  #   outs:
+  #   - reports/latency_report.json
+  split:
+    cmd: python -m src.data.split
+    deps:
+    - data/processed/brain_tumor
+    - src/data/split.py
+    outs:
+    - data/splits/brain_tumor
+  train_pneumonia:
+    cmd: python -m src.training.train
+    deps:
+    - data/processed/chest_xray
+    - requirements.txt
+    - requirements-docker.txt
+    - src/training/dataset.py
+    - src/training/train.py
+    - src/utils/reproducibility.py
+    outs:
+    - models/pneumonia
+  train_brain:
+    cmd: python -m src.training.train_brain
+    deps:
+    - data/splits/brain_tumor
+    - requirements.txt
+    - requirements-docker.txt
+    - src/training/dataset.py
+    - src/training/train_brain.py
+    - src/utils/reproducibility.py
+    outs:
+    - models/brain_tumor
+  evaluate:
+    cmd: python -m src.evaluation.evaluate
+    deps:
+    - data/processed/chest_xray
+    - data/splits/brain_tumor
+    - models
+    - requirements.txt
+    - requirements-docker.txt
+    - src/training/dataset.py
+    - src/evaluation/evaluate.py
+    - src/utils/reproducibility.py
+    outs:
+      - reports/evaluation.txt
+  model_optimization:
+    cmd: python -m src.training.optimization
+    deps:
+    - models
+    - src/training/optimization.py
+    outs:
+    - reports/model_optimization_report.json
+  experiments_init:
+    cmd: python -m src.training.experiments
+    deps:
+    - src/training/experiments.py
+    outs:
+    - reports/model_configs.json
+  monitor:
+    cmd: python -m src.monitoring.monitor
+    deps:
+    - data/processed
+    - data/processed/chest_xray
+    - data/splits/brain_tumor
+    - models
+    - requirements.txt
+    - src/monitoring/monitor.py
+    - src/features/engineering.py
+    - src/training/dataset.py
+    - src/utils/reproducibility.py
+    - reports/feature_store/feature_baseline.json
+    outs:
+    - reports/monitoring_report.json
+    - reports/monitoring_baseline.json
+
+  

@@ -1,0 +1,123 @@
+# Large Model Files
+*.pt
+*.pth
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.onnx
+*.pb
+models/
+
+# Data Files
+*.csv
+*.xlsx
+*.xls
+datasets/
+raw_data/
+*.parquet
+
+# DVC Cache & Artifacts
+.dvc/config.local
+dvc.lock
+.dvc/cache/
+.dvc/tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+pip-log.txt
+pip-delete-this-directory.txt
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Docker volumes & containers
+docker-volumes/
+.dockerignore
+
+# MLflow artifacts
+mlruns/
+.mlflow/
+
+# Monitoring & reports (keep docs, but ignore generated reports if very large)
+monitoring_data/
+metrics/
+
+# Cache directories
+.cache/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE metadata
+.vscode/settings.json
+.vscode/launch.json
+
+# Node modules (if any frontend deps)
+node_modules/
+npm-debug.log
+
+# Grafana backups
+grafana/backups/

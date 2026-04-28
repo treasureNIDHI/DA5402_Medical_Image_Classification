@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-04-25T11:28:09.058922",
+  "liveness": {
+    "status": "alive",
+    "timestamp": "2026-04-25T11:28:09.058937",
+    "uptime_seconds": 2486.002774,
+    "process_available": true
+  },
+  "readiness": {
+    "status": "ready",
+    "ready": true,
+    "models_loaded": true,
+    "resources_available": true,
+    "recent_requests_healthy": true,
+    "resource_status": {
+      "cpu_ok": true,
+      "memory_ok": true,
+      "disk_ok": true,
+      "gpu_ok": true
+    },
+    "metrics": {
+      "total_requests": 15,
+      "successful_requests": 15,
+      "failed_requests": 0,
+      "average_latency": 0.07829016049702962,
+      "median_latency": 0.06450247764587402,
+      "p95_latency": 0.13366460800170898,
+      "p99_latency": 0.13366460800170898,
+      "min_latency": 0.05235552787780762,
+      "max_latency": 0.13366460800170898,
+      "error_rate": 0.0,
+      "slow_request_rate": 0.0,
+      "uptime_seconds": 2486.103547
+    },
+    "timestamp": "2026-04-25T11:28:09.159794"
+  },
+  "startup": {
+    "status": "ready",
+    "ready": true,
+    "elapsed_seconds": 2486.103648,
+    "startup_timeout_seconds": 120,
+    "timed_out": true,
+    "models_exist": true,
+    "models_loadable": {
+      "pneumonia": true,
+      "brain": true
+    },
+    "timestamp": "2026-04-25T11:28:09.838390"
+  },
+  "metrics": {
+    "total_requests": 15,
+    "successful_requests": 15,
+    "failed_requests": 0,
+    "average_latency": 0.07829016049702962,
+    "median_latency": 0.06450247764587402,
+    "p95_latency": 0.13366460800170898,
+    "p99_latency": 0.13366460800170898,
+    "min_latency": 0.05235552787780762,
+    "max_latency": 0.13366460800170898,
+    "error_rate": 0.0,
+    "slow_request_rate": 0.0,
+    "uptime_seconds": 2486.782265
+  },
+  "resources": {
+    "cpu_percent": 40.7,
+    "memory_percent": 38.4,
+    "memory_available_mb": 4828.3203125,
+    "disk_percent": 6.3,
+    "disk_available_mb": 917189.70703125,
+    "gpu_memory_allocated": null,
+    "gpu_usage_percent": null,
+    "threshold_status": {
+      "cpu_ok": true,
+      "memory_ok": true,
+      "disk_ok": true,
+      "gpu_ok": true
+    }
+  }
+}
